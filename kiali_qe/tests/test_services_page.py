@@ -1,3 +1,5 @@
+import pytest
+
 from kiali_qe.tests import ServicesPageTest
 
 @pytest.mark.group18

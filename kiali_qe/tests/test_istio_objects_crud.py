@@ -1,3 +1,5 @@
+import pytest
+
 from kiali_qe.tests import IstioConfigPageTest
 from kiali_qe.utils import get_yaml, get_dict
 from kiali_qe.utils.path import istio_objects_path

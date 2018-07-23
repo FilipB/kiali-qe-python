@@ -1,3 +1,5 @@
+import pytest
+
 from kiali_qe.components.enums import HelpMenuEnum, MainMenuEnum, UserMenuEnum
 from kiali_qe.pages import RootPage
 from kiali_qe.utils import is_equal
