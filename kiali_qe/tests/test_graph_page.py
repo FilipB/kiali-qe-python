@@ -1,3 +1,4 @@
+import pytest
 from kiali_qe.components.enums import (
     GraphPageBadgesFilter,
     GraphPageDisplayFilter,
@@ -22,7 +23,7 @@ def test_duration(browser):
     assert is_equal(options_defined, options_listed), \
         ('Options mismatch: defined:{}, listed:{}'.format(options_defined, options_listed))
 
-
+@pytest.mark.group1
 def test_refresh_interval(browser):
     # get page instance
     page = GraphPage(browser)
