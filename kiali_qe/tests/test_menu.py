@@ -31,6 +31,7 @@ def test_toggle(browser):
     assert not page.main_menu.is_collapsed
 
 @pytest.mark.group14
+@pytest.mark.group34
 def test_help_menu(browser):
     # load root page
     page = RootPage(browser)
@@ -41,6 +42,7 @@ def test_help_menu(browser):
         ('Help menu mismatch: defined:{}, listed:{}'.format(options_defined, options_listed))
 
 @pytest.mark.group15
+@pytest.mark.group35
 def test_user_menu(browser):
     # load root page
     page = RootPage(browser)
