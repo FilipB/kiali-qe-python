@@ -1,3 +1,4 @@
+import pytest
 from kiali_qe.components import Notification
 from kiali_qe.pages import RootPage
 from kiali_qe.utils.log import logger

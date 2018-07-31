@@ -1,3 +1,4 @@
+import pytest
 from kiali_qe.tests import IstioConfigPageTest
 
 @pytest.mark.group2
