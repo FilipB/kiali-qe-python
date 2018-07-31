@@ -61,7 +61,7 @@ def test_destination_rule_broken(kiali_client, openshift_client, browser):
                        kind='DestinationRule',
                        api_version='networking.istio.io/v1alpha3')
 
-@pytest.mark.group5
+@pytest.mark.group1
 def test_virtual_service(kiali_client, openshift_client, browser):
     virtual_service = get_yaml(istio_objects_path.strpath, VIRTUAL_SERVICE)
     virtual_service_dict = get_dict(istio_objects_path.strpath, VIRTUAL_SERVICE)
@@ -82,7 +82,7 @@ def test_virtual_service(kiali_client, openshift_client, browser):
                        api_version='networking.istio.io/v1alpha3')
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group6
+@pytest.mark.group1
 def test_virtual_service_broken(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath, VIRTUAL_SERVICE_BROKEN)
     virtual_service_broken_dict = get_dict(istio_objects_path.strpath, VIRTUAL_SERVICE_BROKEN)
@@ -103,7 +103,7 @@ def test_virtual_service_broken(kiali_client, openshift_client, browser):
                        api_version='networking.istio.io/v1alpha3')
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group7
+@pytest.mark.group1
 def test_virtual_service_broken_weight(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath,
                                       VIRTUAL_SERVICE_BROKEN_WEIGHT)
@@ -126,7 +126,7 @@ def test_virtual_service_broken_weight(kiali_client, openshift_client, browser):
                        api_version='networking.istio.io/v1alpha3')
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group8
+@pytest.mark.group1
 def test_virtual_service_broken_weight_text(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath,
                                       VIRTUAL_SERVICE_BROKEN_WEIGHT_TEXT)
