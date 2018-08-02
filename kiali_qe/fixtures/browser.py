@@ -63,7 +63,7 @@ def _get_driver(capabilities):
     logger.debug('Creating web driver')
     start_time = datetime.now()
     # set resolve_ip to false to make it work in cases when remote driver is running in OpenShift
-    command_executor = RemoteConnection(cfg.selenium.web_driver, resolve_ip=False)
+    command_executor = RemoteConnection(cfg.selenium.web_driver, keep_alive=True, resolve_ip=False)
     # increase the timeout because we are waiting for new pod to be created which takes some time
     command_executor.set_timeout(120)
     driver = webdriver.Remote(command_executor, desired_capabilities=capabilities)
