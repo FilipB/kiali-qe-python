@@ -1,7 +1,11 @@
 import random
 import re
 
-from kiali_qe.components.enums import PaginationPerPage, ServicesPageFilter, IstioConfigPageFilter
+from kiali_qe.components.enums import (
+    PaginationPerPage,
+    ServicesPageFilter,
+    IstioConfigPageFilter
+)
 from kiali_qe.utils import is_equal
 from kiali_qe.utils.log import logger
 
@@ -190,6 +194,68 @@ class ServicesPageTest(AbstractListPageTest):
             openshift_client=openshift_client, page=ServicesPage(browser))
         self.browser = browser
 
+    def assert_random_details(self, filters, force_clear_all=True):
+        # apply filters
+        self.apply_filters(filters=filters, force_clear_all=force_clear_all)
+        # get services from ui
+        services_ui = self.page.content.all_items
+        # random services filters
+        assert len(services_ui) > 0
+        if len(services_ui) > 3:
+            _random_services = random.sample(services_ui, 3)
+        else:
+            _random_services = services_ui
+        # create filters
+        for _selected_service in _random_services:
+            self.assert_details(_selected_service.name, _selected_service.namespace)
+
+    def assert_details(self, name, namespace):
+        logger.debug('Details: {}, {}'.format(name, namespace))
+        # load the page first
+        self.page.load(force_load=True)
+        # TODO apply pagination feature in get_details
+        # apply filters
+        self.apply_filters(filters=[
+            {'name': ServicesPageFilter.NAMESPACE.text, 'value': namespace},
+            {'name': ServicesPageFilter.SERVICE_NAME.text, 'value': name}])
+        # load service details page
+        service_details_ui = self.page.content.get_details(name, namespace)
+        assert service_details_ui
+        assert name == service_details_ui.name
+        # get service detals from rest
+        service_details_rest = self.kiali_client.service_details(
+            namespace=namespace,
+            service_name=name)
+        assert service_details_rest
+        assert name == service_details_rest.name
+        # TODO add check for service openshift REST details
+        assert service_details_rest.istio_sidecar\
+            == service_details_ui.istio_sidecar
+        assert service_details_ui.is_equal(service_details_rest,
+                                           advanced_check=False)
+        assert service_details_ui.virtual_services_number\
+            == len(service_details_rest.virtual_services)
+        assert service_details_ui.destination_rules_number\
+            == len(service_details_rest.destination_rules)
+        assert service_details_ui.virtual_services_number\
+            == len(service_details_ui.virtual_services)
+        assert service_details_ui.destination_rules_number\
+            == len(service_details_ui.destination_rules)
+        for virtual_service_ui in service_details_ui.virtual_services:
+            found = False
+            for virtual_service_rest in service_details_rest.virtual_services:
+                if virtual_service_ui.is_equal(virtual_service_rest, advanced_check=True):
+                    found = True
+                    break
+            assert found, 'VS {} not found in REST'.format(virtual_service_ui)
+        for destination_rule_ui in service_details_ui.destination_rules:
+            found = False
+            for destination_rule_rest in service_details_rest.destination_rules:
+                if destination_rule_ui.is_equal(destination_rule_rest, advanced_check=True):
+                    found = True
+                    break
+            assert found, 'DR {} not found in REST'.format(destination_rule_ui)
+
     def assert_all_items(self, filters, force_clear_all=True):
         # apply filters
         self.apply_filters(filters=filters, force_clear_all=force_clear_all)
@@ -290,6 +356,11 @@ class IstioConfigPageTest(AbstractListPageTest):
         logger.debug('Details: {}, {}'.format(name, namespace))
         # load the page first
         self.page.load(force_load=True)
+        # TODO apply pagination feature in get_details
+        # apply filters
+        self.apply_filters(filters=[
+            {'name': IstioConfigPageFilter.NAMESPACE.text, 'value': namespace},
+            {'name': IstioConfigPageFilter.ISTIO_NAME.text, 'value': name}])
         # load config details page
         config_details_ui = self.page.content.get_details(name, namespace)
         assert config_details_ui

@@ -1,6 +1,7 @@
-import pytest
 
-from kiali_qe.tests import IstioConfigPageTest
+import pytest
+from kiali_qe.tests import IstioConfigPageTest, ServicesPageTest
+
 from kiali_qe.utils import get_yaml, get_dict
 from kiali_qe.utils.path import istio_objects_path
 from kiali_qe.components.enums import (
@@ -11,6 +12,7 @@ from kiali_qe.components.enums import (
 
 
 BOOKINFO = 'bookinfo'
+REVIEWS = 'reviews'
 DEST_RULE = 'destination-rule-cb.yaml'
 DEST_RULE_VS = 'destination-rule.yaml'
 DEST_RULE_BROKEN = 'destination-rule-cb-broken.yaml'
@@ -269,6 +271,14 @@ def _istio_config_test(kiali_client, openshift_client, browser, config_dict,
                                kind,
                                api_version)
 
+    _service_details_test(kiali_client,
+                          openshift_client,
+                          browser,
+                          config_dict,
+                          config_yaml,
+                          kind,
+                          api_version)
+
     _istio_config_delete(openshift_client, config_dict, kind, api_version)
 
     tests.assert_all_items(filters)
@@ -280,3 +290,11 @@ def _istio_config_details_test(kiali_client, openshift_client, browser, config_d
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
 
     tests.assert_details(name=config_dict.metadata.name, namespace=BOOKINFO)
+
+
+def _service_details_test(kiali_client, openshift_client, browser, config_dict,
+                          config_yaml, kind, api_version):
+    tests = ServicesPageTest(
+        kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
+
+    tests.assert_details(name=REVIEWS, namespace=BOOKINFO)
