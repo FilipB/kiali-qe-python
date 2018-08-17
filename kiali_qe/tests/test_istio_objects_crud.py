@@ -13,8 +13,11 @@ from kiali_qe.components.enums import (
 
 BOOKINFO = 'bookinfo'
 REVIEWS = 'reviews'
-DEST_RULE = 'destination-rule-cb.yaml'
-DEST_RULE_VS = 'destination-rule.yaml'
+DETAILS = 'details'
+RATINGS = 'ratings'
+DEST_RULE = 'destination-rule-cb-details.yaml'
+DEST_RULE_VS_RATINGS = 'destination-rule-ratings.yaml'
+DEST_RULE_VS_REVIEWS = 'destination-rule-reviews.yaml'
 DEST_RULE_BROKEN = 'destination-rule-cb-broken.yaml'
 VIRTUAL_SERVICE = 'virtual-service.yaml'
 VIRTUAL_SERVICE_BROKEN = 'virtual-service-broken.yaml'
@@ -42,9 +45,10 @@ def test_destination_rule(kiali_client, openshift_client, browser):
                          'value': destination_rule_dict.metadata.name}
                         ],
                        kind='DestinationRule',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=DETAILS)
 
-@pytest.mark.group2
+@pytest.mark.group1
 def test_destination_rule_broken(kiali_client, openshift_client, browser):
     destination_rule_broken = get_yaml(istio_objects_path.strpath, DEST_RULE_BROKEN)
     destination_rule_broken_dict = get_dict(istio_objects_path.strpath, DEST_RULE_BROKEN)
@@ -61,13 +65,14 @@ def test_destination_rule_broken(kiali_client, openshift_client, browser):
                          'value': destination_rule_broken_dict.metadata.name}
                         ],
                        kind='DestinationRule',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=DETAILS)
 
-@pytest.mark.group1
+@pytest.mark.group2
 def test_virtual_service(kiali_client, openshift_client, browser):
     virtual_service = get_yaml(istio_objects_path.strpath, VIRTUAL_SERVICE)
     virtual_service_dict = get_dict(istio_objects_path.strpath, VIRTUAL_SERVICE)
-    _create_dest_rule_vs(openshift_client)
+    _create_dest_rule_vs(openshift_client,DEST_RULE_VS_REVIEWS)
 
     _istio_config_test(kiali_client, openshift_client, browser,
                        virtual_service_dict,
@@ -81,14 +86,15 @@ def test_virtual_service(kiali_client, openshift_client, browser):
                          'value': virtual_service_dict.metadata.name}
                         ],
                        kind='VirtualService',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=REVIEWS)
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group1
+@pytest.mark.group2
 def test_virtual_service_broken(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath, VIRTUAL_SERVICE_BROKEN)
     virtual_service_broken_dict = get_dict(istio_objects_path.strpath, VIRTUAL_SERVICE_BROKEN)
-    _create_dest_rule_vs(openshift_client)
+    _create_dest_rule_vs(openshift_client, DEST_RULE_VS_REVIEWS)
 
     _istio_config_test(kiali_client, openshift_client, browser,
                        virtual_service_broken_dict,
@@ -102,16 +108,17 @@ def test_virtual_service_broken(kiali_client, openshift_client, browser):
                          'value': virtual_service_broken_dict.metadata.name}
                         ],
                        kind='VirtualService',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=REVIEWS)
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group1
+@pytest.mark.group2
 def test_virtual_service_broken_weight(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath,
                                       VIRTUAL_SERVICE_BROKEN_WEIGHT)
     virtual_service_broken_dict = get_dict(istio_objects_path.strpath,
                                            VIRTUAL_SERVICE_BROKEN_WEIGHT)
-    _create_dest_rule_vs(openshift_client)
+    _create_dest_rule_vs(openshift_client, DEST_RULE_VS_REVIEWS)
 
     _istio_config_test(kiali_client, openshift_client, browser,
                        virtual_service_broken_dict,
@@ -125,16 +132,17 @@ def test_virtual_service_broken_weight(kiali_client, openshift_client, browser):
                          'value': virtual_service_broken_dict.metadata.name}
                         ],
                        kind='VirtualService',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=REVIEWS)
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group1
+@pytest.mark.group3
 def test_virtual_service_broken_weight_text(kiali_client, openshift_client, browser):
     virtual_service_broken = get_yaml(istio_objects_path.strpath,
                                       VIRTUAL_SERVICE_BROKEN_WEIGHT_TEXT)
     virtual_service_broken_dict = get_dict(istio_objects_path.strpath,
                                            VIRTUAL_SERVICE_BROKEN_WEIGHT_TEXT)
-    _create_dest_rule_vs(openshift_client)
+    _create_dest_rule_vs(openshift_client,DEST_RULE_VS_RATINGS)
 
     _istio_config_test(kiali_client, openshift_client, browser,
                        virtual_service_broken_dict,
@@ -148,10 +156,11 @@ def test_virtual_service_broken_weight_text(kiali_client, openshift_client, brow
                          'value': virtual_service_broken_dict.metadata.name}
                         ],
                        kind='VirtualService',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=RATINGS)
     _delete_dest_rule_vs(openshift_client)
 
-@pytest.mark.group2
+@pytest.mark.group3
 def test_quota_spec(kiali_client, openshift_client, browser):
     quota_spec = get_yaml(istio_objects_path.strpath, QUOTA_SPEC)
     quota_spec_dict = get_dict(istio_objects_path.strpath, QUOTA_SPEC)
@@ -166,9 +175,10 @@ def test_quota_spec(kiali_client, openshift_client, browser):
                          'value': 'quota-spec-auto'}
                         ],
                        kind='QuotaSpec',
-                       api_version='config.istio.io/v1alpha2')
+                       api_version='config.istio.io/v1alpha2',
+                       service_name=RATINGS)
 
-@pytest.mark.group2
+@pytest.mark.group3
 def test_quota_spec_binding(kiali_client, openshift_client, browser):
     quota_spec_binding = get_yaml(istio_objects_path.strpath, QUOTA_SPEC_BINDING)
     quota_spec_binding_dict = get_dict(istio_objects_path.strpath, QUOTA_SPEC_BINDING)
@@ -183,9 +193,10 @@ def test_quota_spec_binding(kiali_client, openshift_client, browser):
                          'value': 'quota-spec-binding-auto'}
                         ],
                        kind='QuotaSpecBinding',
-                       api_version='config.istio.io/v1alpha2')
+                       api_version='config.istio.io/v1alpha2',
+                       service_name=RATINGS)
 
-@pytest.mark.group3
+@pytest.mark.group2
 def test_gateway(kiali_client, openshift_client, browser):
     gateway = get_yaml(istio_objects_path.strpath, GATEWAY)
     gateway_dict = get_dict(istio_objects_path.strpath, GATEWAY)
@@ -200,9 +211,10 @@ def test_gateway(kiali_client, openshift_client, browser):
                          'value': gateway_dict.metadata.name}
                         ],
                        kind='Gateway',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=REVIEWS)
 
-@pytest.mark.group3
+@pytest.mark.group1
 def test_service_entry(kiali_client, openshift_client, browser):
     yaml = get_yaml(istio_objects_path.strpath, SERVICE_ENTRY)
     dict = get_dict(istio_objects_path.strpath, SERVICE_ENTRY)
@@ -217,7 +229,8 @@ def test_service_entry(kiali_client, openshift_client, browser):
                          'value': dict.metadata.name}
                         ],
                        kind='ServiceEntry',
-                       api_version='networking.istio.io/v1alpha3')
+                       api_version='networking.istio.io/v1alpha3',
+                       service_name=DETAILS)
 
 
 def _istio_config_create(openshift_client, config_dict, config_yaml, kind, api_version):
@@ -239,9 +252,9 @@ def _istio_config_delete(openshift_client, config_dict, kind, api_version):
                                          api_version=api_version)
 
 
-def _create_dest_rule_vs(openshift_client):
-    destination_rule = get_yaml(istio_objects_path.strpath, DEST_RULE_VS)
-    destination_rule_dict = get_dict(istio_objects_path.strpath, DEST_RULE_VS)
+def _create_dest_rule_vs(openshift_client, destination_rule_conf):
+    destination_rule = get_yaml(istio_objects_path.strpath, destination_rule_conf)
+    destination_rule_dict = get_dict(istio_objects_path.strpath, destination_rule_conf)
     _istio_config_create(openshift_client, destination_rule_dict, destination_rule,
                          kind='DestinationRule',
                          api_version='networking.istio.io/v1alpha3')
@@ -255,7 +268,8 @@ def _delete_dest_rule_vs(openshift_client):
 
 
 def _istio_config_test(kiali_client, openshift_client, browser, config_dict,
-                       config_yaml, filters, kind, api_version):
+                       config_yaml, filters, kind, api_version, 
+                       service_name, check_service_details=True):
     tests = IstioConfigPageTest(
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
 
@@ -271,13 +285,15 @@ def _istio_config_test(kiali_client, openshift_client, browser, config_dict,
                                kind,
                                api_version)
 
-    _service_details_test(kiali_client,
-                          openshift_client,
-                          browser,
-                          config_dict,
-                          config_yaml,
-                          kind,
-                          api_version)
+    if check_service_details:
+        _service_details_test(kiali_client,
+                              openshift_client,
+                              browser,
+                              config_dict,
+                              config_yaml,
+                              kind,
+                              api_version,
+                              service_name)
 
     _istio_config_delete(openshift_client, config_dict, kind, api_version)
 
@@ -293,8 +309,8 @@ def _istio_config_details_test(kiali_client, openshift_client, browser, config_d
 
 
 def _service_details_test(kiali_client, openshift_client, browser, config_dict,
-                          config_yaml, kind, api_version):
+                          config_yaml, kind, api_version, service_name):
     tests = ServicesPageTest(
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
 
-    tests.assert_details(name=REVIEWS, namespace=BOOKINFO)
+    tests.assert_details(name=service_name, namespace=BOOKINFO)
