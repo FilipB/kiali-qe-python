@@ -3,7 +3,7 @@ import pytest
 from kiali_qe.tests import ServicesPageTest
 from kiali_qe.components.enums import ServicesPageFilter
 
-@pytest.mark.group4
+@pytest.mark.group9
 def test_pagination_feature(kiali_client, openshift_client, browser):
     tests = ServicesPageTest(
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
