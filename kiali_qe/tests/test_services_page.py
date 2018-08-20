@@ -7,6 +7,7 @@ from kiali_qe.components.enums import ServicesPageFilter
 def test_pagination_feature(kiali_client, openshift_client, browser):
     tests = ServicesPageTest(
         kiali_client=kiali_client, openshift_client=openshift_client, browser=browser)
+    # use only istio-system namespace which is not affected by other CRUD tests which are using bookinfo
     tests.apply_filters(filters=[
             {'name': ServicesPageFilter.NAMESPACE.text, 'value': 'istio-system'}])
     tests.assert_pagination_feature()
